@@ -30,12 +30,15 @@ class ArticleController
 
         $rawArticles = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        var_dump($rawArticles);
-
         $articles = [];
         foreach ($rawArticles as $rawArticle) {
             // We are converting an article from a "dumb" array to a much more flexible class
-            $articles[] = new Article($rawArticle['title'], $rawArticle['description'], $rawArticle['publish_date']);
+            $articles[] = new Article(
+                $rawArticle['title'],
+                $rawArticle['description'],
+                $rawArticle['publish_date'],
+                $rawArticle['author']
+            );
         }
 
         return $articles;
@@ -44,5 +47,6 @@ class ArticleController
     public function show()
     {
         // TODO: this can be used for a detail page
+        // TODO: get article id's
     }
 }

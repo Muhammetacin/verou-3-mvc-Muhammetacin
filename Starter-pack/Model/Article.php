@@ -7,12 +7,14 @@ class Article
     public string $title;
     public ?string $description;
     public ?string $publishDate;
+    public ?string $author;
 
-    public function __construct(string $title, ?string $description, ?string $publishDate)
+    public function __construct(string $title, ?string $description, ?string $publishDate, ?string $author)
     {
         $this->title = $title;
         $this->description = $description;
         $this->publishDate = $publishDate;
+        $this->author = $author;
     }
 
     public function formatPublishDate($format = 'd-m-Y')
