@@ -55,13 +55,14 @@ class ArticleController
     public function show(string $title)
     {
         // this can be used for a detail page
-        $query = 'SELECT LAG(:title) OVER ( ORDER BY ID ) AS PreviousArticleTitle, 
-            :title,
-            LEAD(:title) OVER ( ORDER BY ID ) AS NextArticleTitle FROM articles';
+//        $query = 'SELECT LAG(:title) OVER ( ORDER BY ID ) AS PreviousArticleTitle,
+//            :title,
+//            LEAD(:title) OVER ( ORDER BY ID ) AS NextArticleTitle FROM articles';
+
 
         $dbManager = $this->makeDbConnection();
+
         $statement = $dbManager->connection->prepare('SELECT * FROM articles WHERE title=:title');
-//        $statement = $dbManager->connection->prepare($query);
         $statement->bindparam(':title', $title, PDO::PARAM_STR);
         $statement->execute();
 
@@ -75,6 +76,24 @@ class ArticleController
             $rawArticle->image_url
         );
 
+        $articleId = $rawArticle->id;
+        $prevArticleId = $rawArticle->id - 1;
+        $nextArticleId = $rawArticle->id + 1;
+
+        // get next article title
+        $nextArticle = $this->getAnotherArticle($nextArticleId, $dbManager);
+
+        // get previous article title
+        $prevArticle = $this->getAnotherArticle($prevArticleId, $dbManager);
+
         require 'View/articles/show.php';
+    }
+
+    private function getAnotherArticle(int $id, DatabaseManager $dbManager) {
+        $anotherArticleTitleQuery = 'SELECT title FROM articles WHERE id = :id';
+        $stmtNextArticle = $dbManager->connection->prepare($anotherArticleTitleQuery);
+        $stmtNextArticle->bindparam(':id', $id, PDO::PARAM_INT);
+        $stmtNextArticle->execute();
+        return $stmtNextArticle->fetch(PDO::FETCH_OBJ);
     }
 }

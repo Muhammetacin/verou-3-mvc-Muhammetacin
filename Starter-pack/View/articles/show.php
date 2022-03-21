@@ -4,15 +4,15 @@
 
 <section>
     <h1><?= $article->title ?></h1>
-    <p><?= $article->formatPublishDate() ?></p>
+    <p><?= $article->formatPublishDate() ?> - By <?= $article->author ?></p>
     <p><?= $article->description ?></p>
 
     <img src="<?= $article->getImageUrl() ?>" alt="Article image" height="600" width="800">
 
     <br><br>
-    <?php // TODO: links to next and previous ?>
-    <a href="#">Previous article</a>
-    <a href="#">Next article</a>
+
+    <a href="index.php?page=show-article&title=<?= $prevArticle->title ?? $article->title ?>">Previous article</a>
+    <a href="index.php?page=show-article&title=<?= $nextArticle->title ?? $article->title ?>">Next article</a>
 </section>
 
 <br>
