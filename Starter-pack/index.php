@@ -19,7 +19,7 @@ $page = $_GET['page'] ?? null;
 // Load the controller
 // It will *control* the rest of the work to load the page
 switch ($page) {
-    case 'articles-index':
+    case 'articles':
         // This is shorthand for:
         // $articleController = new ArticleController;
         // $articleController->index();
