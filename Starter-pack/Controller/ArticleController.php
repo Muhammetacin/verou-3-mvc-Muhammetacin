@@ -54,21 +54,20 @@ class ArticleController
 
     public function show(string $title)
     {
-        // TODO: this can be used for a detail page
-        // TODO: get article id's
+        // this can be used for a detail page
         $dbManager = $this->makeDbConnection();
         $statement = $dbManager->connection->prepare('SELECT * FROM articles WHERE title=:title');
         $statement->execute([
             ':title' => $title
         ]);
 
-        $rawArticle = $statement->fetch(PDO::FETCH_ASSOC);
+        $rawArticle = $statement->fetch(PDO::FETCH_OBJ);
 
         $article = new Article(
-            $rawArticle['title'],
-            $rawArticle['description'],
-            $rawArticle['publish_date'],
-            $rawArticle['author']
+            $rawArticle->title,
+            $rawArticle->description,
+            $rawArticle->publish_date,
+            $rawArticle->author
         );
 
         require 'View/articles/show.php';
