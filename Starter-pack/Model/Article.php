@@ -8,13 +8,15 @@ class Article
     public ?string $description;
     public ?string $publishDate;
     public ?string $author;
+    public ?string $image_url;
 
-    public function __construct(string $title, ?string $description, ?string $publishDate, ?string $author)
+    public function __construct(string $title, ?string $description, ?string $publishDate, ?string $author, ?string $image_url)
     {
         $this->title = $title;
         $this->description = $description;
         $this->publishDate = $publishDate;
         $this->author = $author;
+        $this->image_url = $image_url;
     }
 
     public function formatPublishDate($format = 'd-m-Y')
@@ -25,5 +27,9 @@ class Article
 
         // return the date in the required format
         return date($format, strtotime($this->publishDate));
+    }
+
+    public function getImageUrl(): string {
+        return $this->image_url;
     }
 }

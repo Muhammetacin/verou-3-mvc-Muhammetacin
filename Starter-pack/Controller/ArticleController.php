@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 class ArticleController
 {
-//    private DatabaseManager $dbManager;
-
-    private function makeDbConnection() {
+    private function makeDbConnection()
+    {
         // prepare the database connection
         // Note: you might want to use a re-usable databaseManager class - the choice is yours
         require_once 'config.php';
@@ -16,15 +15,6 @@ class ArticleController
         $dbManager->connect();
 
         return $dbManager;
-    }
-
-    public function index()
-    {
-        // Load all required data
-        $articles = $this->getArticles();
-
-        // Load the view
-        require 'View/articles/index.php';
     }
 
     // Note: this function can also be used in a repository - the choice is yours
@@ -45,21 +35,35 @@ class ArticleController
                 $rawArticle['title'],
                 $rawArticle['description'],
                 $rawArticle['publish_date'],
-                $rawArticle['author']
+                $rawArticle['author'],
+                $rawArticle['image_url']
             );
         }
 
         return $articles;
     }
 
+    public function index()
+    {
+        // Load all required data
+        $articles = $this->getArticles();
+
+        // Load the view
+        require 'View/articles/index.php';
+    }
+
     public function show(string $title)
     {
         // this can be used for a detail page
+        $query = 'SELECT LAG(:title) OVER ( ORDER BY ID ) AS PreviousArticleTitle, 
+            :title,
+            LEAD(:title) OVER ( ORDER BY ID ) AS NextArticleTitle FROM articles';
+
         $dbManager = $this->makeDbConnection();
         $statement = $dbManager->connection->prepare('SELECT * FROM articles WHERE title=:title');
-        $statement->execute([
-            ':title' => $title
-        ]);
+//        $statement = $dbManager->connection->prepare($query);
+        $statement->bindparam(':title', $title, PDO::PARAM_STR);
+        $statement->execute();
 
         $rawArticle = $statement->fetch(PDO::FETCH_OBJ);
 
@@ -67,7 +71,8 @@ class ArticleController
             $rawArticle->title,
             $rawArticle->description,
             $rawArticle->publish_date,
-            $rawArticle->author
+            $rawArticle->author,
+            $rawArticle->image_url
         );
 
         require 'View/articles/show.php';
