@@ -25,8 +25,10 @@ switch ($page) {
         // $articleController->index();
         (new ArticleController())->index();
         break;
-    case 'articles-show':
-        // TODO: detail page
+    case 'show-article':
+        // detail page
+        (new ArticleController())->show($_GET['title']);
+        break;
     case 'home':
     default:
         (new HomepageController())->index();

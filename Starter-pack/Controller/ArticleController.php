@@ -4,6 +4,20 @@ declare(strict_types = 1);
 
 class ArticleController
 {
+//    private DatabaseManager $dbManager;
+
+    private function makeDbConnection() {
+        // prepare the database connection
+        // Note: you might want to use a re-usable databaseManager class - the choice is yours
+        require_once 'config.php';
+        require_once 'DatabaseManager.php';
+
+        $dbManager = new DatabaseManager($config['host'], $config['user'], $config['password'], $config['dbname']);
+        $dbManager->connect();
+
+        return $dbManager;
+    }
+
     public function index()
     {
         // Load all required data
@@ -16,16 +30,10 @@ class ArticleController
     // Note: this function can also be used in a repository - the choice is yours
     private function getArticles()
     {
-        // prepare the database connection
-        // Note: you might want to use a re-usable databaseManager class - the choice is yours
-        require_once 'config.php';
-        require_once 'DatabaseManager.php';
-
-        $databaseManager = new DatabaseManager($config['host'], $config['user'], $config['password'], $config['dbname']);
-        $databaseManager->connect();
+        $dbManager = $this->makeDbConnection();
 
         // fetch all articles as $rawArticles (as a simple array)
-        $statement = $databaseManager->connection->prepare('SELECT * FROM articles');
+        $statement = $dbManager->connection->prepare('SELECT * FROM articles');
         $statement->execute();
 
         $rawArticles = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -44,9 +52,25 @@ class ArticleController
         return $articles;
     }
 
-    public function show()
+    public function show(string $title)
     {
         // TODO: this can be used for a detail page
         // TODO: get article id's
+        $dbManager = $this->makeDbConnection();
+        $statement = $dbManager->connection->prepare('SELECT * FROM articles WHERE title=:title');
+        $statement->execute([
+            ':title' => $title
+        ]);
+
+        $rawArticle = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $article = new Article(
+            $rawArticle['title'],
+            $rawArticle['description'],
+            $rawArticle['publish_date'],
+            $rawArticle['author']
+        );
+
+        require 'View/articles/show.php';
     }
 }
