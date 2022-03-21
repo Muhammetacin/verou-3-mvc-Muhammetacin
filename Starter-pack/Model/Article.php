@@ -7,7 +7,7 @@ class Article
     public string $title;
     public ?string $description;
     public ?string $publishDate;
-    public ?string $author;
+    public string $author;
     public ?string $image_url;
 
     public function __construct(string $title, ?string $description, ?string $publishDate, ?string $author, ?string $image_url)
