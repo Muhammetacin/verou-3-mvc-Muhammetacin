@@ -29,6 +29,9 @@ switch ($page) {
         // detail page
         (new ArticleController())->show($_GET['title']);
         break;
+    case 'authors':
+        (new ArticleController())->getArticlesOfAuthor($_GET['author']);
+        break;
     case 'home':
     default:
         (new HomepageController())->index();

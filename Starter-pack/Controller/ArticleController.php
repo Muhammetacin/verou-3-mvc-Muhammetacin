@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class ArticleController
 {
-    private function makeDbConnection()
+    private function makeDbConnection(): DatabaseManager
     {
         // prepare the database connection
         // Note: you might want to use a re-usable databaseManager class - the choice is yours
@@ -18,7 +18,7 @@ class ArticleController
     }
 
     // Note: this function can also be used in a repository - the choice is yours
-    private function getArticles()
+    private function getArticles(): array
     {
         $dbManager = $this->makeDbConnection();
 
@@ -90,5 +90,32 @@ class ArticleController
         $stmtAnotherArticle->bindparam(':id', $id, PDO::PARAM_INT);
         $stmtAnotherArticle->execute();
         return $stmtAnotherArticle->fetch(PDO::FETCH_OBJ);
+    }
+
+    public function getArticlesOfAuthor(string $author): array
+    {
+        $dbManager = $this->makeDbConnection();
+
+        $sqlQuery = 'SELECT * FROM articles WHERE author = :author';
+        $statement = $dbManager->connection->prepare($sqlQuery);
+        $statement->bindparam(':author', $author, PDO::PARAM_STR);
+        $statement->execute();
+
+        $rawArticles = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $articles = [];
+        foreach ($rawArticles as $rawArticle) {
+            $articles[] = new Article(
+                $rawArticle['title'],
+                $rawArticle['description'],
+                $rawArticle['publish_date'],
+                $rawArticle['author'],
+                $rawArticle['image_url']
+            );
+        }
+
+        require 'View/authors/index.php';
+
+        return $articles;
     }
 }
